@@ -78,9 +78,13 @@ El servidor desplegará una consola con los enlaces directos para las pruebas.
 
 ### Extracción de Datos y Manipulación del DOM (Cheerio)
 Para el cumplimiento del requerimiento de scraping, se implementó una lógica de consulta al DOM en el archivo `libroService.js` utilizando los siguientes métodos de **Cheerio**:
+
 * **Carga del DOM:** `cheerio.load(html)` para transformar el string crudo en un objeto consultable.
+
 * **Selección y Recorrido:** Uso de `$('.libro').each()` para iterar sobre cada contenedor de libro de forma independiente.
+
 * **Extracción de Atributos:** Uso de `.attr('data-id')` y `.attr('data-categoria')` para obtener metadatos no visibles en el texto.
+
 * **Limpieza de Datos:** Implementación de `.replace()` y `.trim()` para sanitizar los campos, eliminando prefijos como "ISBN:" o "Año:" antes de convertir a tipos de datos numéricos.
 
 ### Arquitectura de Software y Manejo de Errores
