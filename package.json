@@ -1,5 +1,6 @@
 {
   "name": "actividad_2_6_cheerio",
+  "type": "module",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
