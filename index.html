@@ -504,11 +504,21 @@ El servidor desplegará una consola con los enlaces directos para las pruebas.</
 </code></pre></div></p>
 <h2 id="6-documentacion-tecnica-cumplimiento-de-requerimientos">6. Documentación Técnica (Cumplimiento de Requerimientos)</h2>
 <h3 id="extraccion-de-datos-y-manipulacion-del-dom-cheerio">Extracción de Datos y Manipulación del DOM (Cheerio)</h3>
-<p>Para el cumplimiento del requerimiento de scraping, se implementó una lógica de consulta al DOM en el archivo <code>libroService.js</code> utilizando los siguientes métodos de <strong>Cheerio</strong>:
-* <strong>Carga del DOM:</strong> <code>cheerio.load(html)</code> para transformar el string crudo en un objeto consultable.
-* <strong>Selección y Recorrido:</strong> Uso de <code>$('.libro').each()</code> para iterar sobre cada contenedor de libro de forma independiente.
-* <strong>Extracción de Atributos:</strong> Uso de <code>.attr('data-id')</code> y <code>.attr('data-categoria')</code> para obtener metadatos no visibles en el texto.
-* <strong>Limpieza de Datos:</strong> Implementación de <code>.replace()</code> y <code>.trim()</code> para sanitizar los campos, eliminando prefijos como "ISBN:" o "Año:" antes de convertir a tipos de datos numéricos.</p>
+<p>Para el cumplimiento del requerimiento de scraping, se implementó una lógica de consulta al DOM en el archivo <code>libroService.js</code> utilizando los siguientes métodos de <strong>Cheerio</strong>:</p>
+<ul>
+<li>
+<p><strong>Carga del DOM:</strong> <code>cheerio.load(html)</code> para transformar el string crudo en un objeto consultable.</p>
+</li>
+<li>
+<p><strong>Selección y Recorrido:</strong> Uso de <code>$('.libro').each()</code> para iterar sobre cada contenedor de libro de forma independiente.</p>
+</li>
+<li>
+<p><strong>Extracción de Atributos:</strong> Uso de <code>.attr('data-id')</code> y <code>.attr('data-categoria')</code> para obtener metadatos no visibles en el texto.</p>
+</li>
+<li>
+<p><strong>Limpieza de Datos:</strong> Implementación de <code>.replace()</code> y <code>.trim()</code> para sanitizar los campos, eliminando prefijos como "ISBN:" o "Año:" antes de convertir a tipos de datos numéricos.</p>
+</li>
+</ul>
 <h3 id="arquitectura-de-software-y-manejo-de-errores">Arquitectura de Software y Manejo de Errores</h3>
 <p>El proyecto sigue el patrón de diseño de <strong>Separación de Capas</strong>, lo que permite un manejo de errores granulares y respuestas HTTP normalizadas:</p>
 <ol>
