@@ -16,7 +16,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = 3000;
 
-// Middleware para procesar JSON [cite: 73, 445]
+// Middleware para procesar JSON
 app.use(express.json());
 
 // 1. Configuración de archivos estáticos (Carpeta public)
