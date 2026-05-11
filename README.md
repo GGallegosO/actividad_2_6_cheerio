@@ -2,10 +2,10 @@
 
 Este proyecto consiste en el desarrollo de un servicio de extracción de datos (Web Scraping) que transforma un catálogo de libros legacy en formato HTML en una API REST estructurada utilizando **Node.js**, **Express** y **Cheerio**.
 
-## 1. Objetivo
+## Objetivo
 El objetivo principal es demostrar la capacidad de procesar información no estructurada desde el servidor, aplicando una arquitectura de software organizada por capas (Rutas, Controladores y Servicios) para garantizar la escalabilidad y el mantenimiento del código.
 
-## 2. Instalación
+## Instalación
 
 Para replicar este entorno en un laboratorio local o servidor Linux, siga estos pasos:
 
@@ -13,17 +13,17 @@ Para replicar este entorno en un laboratorio local o servidor Linux, siga estos 
 # 1. Clonar el repositorio
 git clone https://github.com/GGallegosO/actividad_2_6_cheerio.git
 ```
-## 3. Entrar a la carpeta del proyecto
+## Entrar a la carpeta del proyecto
 ```bash
 cd actividad_2_6_cheerio
 ```
-## 4. Instalar dependencias
+## Instalar dependencias
 ```bash
 # Nota: El proyecto incluye un 'override' en package.json para asegurar 
 # la compatibilidad de la librería 'undici' con versiones de Node.js 18+.
 npm install
 ```
-## 5. Ejecución
+## Ejecución
 Para iniciar el servicio en el puerto 3000:
 ```bash
 # Iniciar servidor
@@ -31,7 +31,7 @@ node app.js
 ```
 El servidor desplegará una consola con los enlaces directos para las pruebas.
 
-## 6. Endpoints de la API
+## Endpoints de la API
 | Método | Endpoint | Descripción |
 | :--- | :--- | :--- |
 | **GET** | `/api/libros` | Retorna el catálogo completo con los 8 libros extraídos. |
@@ -39,7 +39,7 @@ El servidor desplegará una consola con los enlaces directos para las pruebas.
 | **GET** | `/api/libros/categoria/:categoria` | Retorna libros pertenecientes a una categoría específica. |
 | **GET** | `/maqueta` | Permite visualizar el archivo HTML original de la biblioteca. |
 
-## 7. Ejemplos de Request y Response
+## Ejemplos de Request y Response
 
 ### Petición: `GET /api/libros/disponibles`
 
@@ -74,7 +74,7 @@ El servidor desplegará una consola con los enlaces directos para las pruebas.
   ]
 }
 ```
-## 8. Documentación Técnica (Cumplimiento de Requerimientos)
+## Documentación Técnica (Cumplimiento de Requerimientos)
 
 ### Extracción de Datos y Manipulación del DOM (Cheerio)
 Para el cumplimiento del requerimiento de scraping, se implementó una lógica de consulta al DOM en el archivo `libroService.js` utilizando los siguientes métodos de **Cheerio**:
