@@ -61,11 +61,11 @@ export const obtenerLibrosDisponibles = async (req, res) => {
 export const obtenerLibrosPorCategoria = async (req, res) => {
   const { categoria } = req.params;
 
-  // Validación básica del parámetro (Error 400)
-  if (!categoria || typeof categoria !== 'string') {
+  // Validación: Que exista, que sea string Y que no esté vacío (trim)
+  if (!categoria || typeof categoria !== 'string' || categoria.trim() === '') {
     return res.status(400).json({
       exito: false,
-      mensaje: 'El parámetro categoría es inválido.',
+      mensaje: 'El parámetro categoría es inválido o está vacío.',
     });
   }
 
