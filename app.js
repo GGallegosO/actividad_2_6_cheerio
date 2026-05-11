@@ -1,73 +1,57 @@
 /**
  * app.js
- * Punto de entrada principal para el Catálogo de la Biblioteca IP Santo Tomás.
+ * Punto de entrada principal del servidor de la Biblioteca.
+ * Responsabilidad: Configurar Express, registrar rutas y encender el servidor.
  */
 
 import express from 'express';
+import path from 'path';
 import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-// Importaremos nuestras rutas de libros en el siguiente bloque
-import libroRoutes from './src/routes/libroRoutes.js'; 
+import libroRoutes from './src/routes/libroRoutes.js';
 
+// Configuración para obtener la ruta del directorio actual en ES Modules
 const __filename = fileURLToPath(import.meta.url);
-const __dirname  = dirname(__filename);
+const __dirname = path.dirname(__filename);
 
-const app  = express();
-const PORT = process.env.PORT || 3000;
+const app = express();
+const PORT = 3000;
 
-// Middleware
+// Middleware para procesar JSON [cite: 73, 445]
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-// Carpeta para el catálogo estático
-app.use(express.static(join(__dirname, 'public'))); 
 
-// ──────────────────────────────────────────
-// Rutas de la API (Libros)
-// ──────────────────────────────────────────
+// 1. Configuración de archivos estáticos (Carpeta public)
+// Esto permite que el archivo catalogo.html sea accesible desde el servidor [cite: 276, 667]
+app.use(express.static(path.join(__dirname, 'public')));
+
+// 2. Ruta para ver la maqueta original directamente
+app.get('/maqueta', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'catalogo.html'));
+});
+
+// 3. Menú de bienvenida en la raíz (la salida que vimos en el navegador)
+app.get('/', (req, res) => {
+    res.json({
+        nombre: "API Biblioteca Universitaria - Actividad 2.6",
+        version: "1.0.0",
+        descripcion: "Servicio de extracción de datos mediante Cheerio",
+        endpoints: {
+            todosLosLibros: "GET /api/libros",
+            librosDisponibles: "GET /api/libros/disponibles",
+            librosPorCategoria: "GET /api/libros/categoria/:categoria",
+            maquetaOriginal: "GET /maqueta"
+        }
+    });
+});
+
+// 4. Registro de las rutas de la API bajo el prefijo /api [cite: 446, 674]
 app.use('/api', libroRoutes);
 
-// Ruta raíz - Información de la API de la Biblioteca
-app.get('/', (req, res) => {
-  res.json({
-    nombre:    'API Biblioteca Universitaria - Actividad 2.6',
-    version:   '1.0.0',
-    descripcion: 'Servicio de extracción de datos mediante Cheerio',
-    endpoints: {
-      todosLosLibros:      'GET /api/libros',
-      librosDisponibles:   'GET /api/libros/disponibles',
-      librosPorCategoria:  'GET /api/libros/categoria/:categoria',
-      maquetaOriginal:     'GET /maqueta',
-    },
-  });
-});
-
-// Ruta para ver el catálogo HTML legacy directamente [cite: 65]
-app.get('/maqueta', (req, res) => {
-  res.sendFile(join(__dirname, 'public', 'catalogo.html'));
-});
-
-// Middleware: 404
-app.use((req, res) => {
-  res.status(404).json({
-    exito:   false,
-    mensaje: `Ruta no encontrada: ${req.method} ${req.originalUrl}`,
-  });
-});
-
-// Middleware: Manejo global de errores [cite: 75]
-app.use((error, req, res, _next) => {
-  console.error(`[ERROR] ${error.message}`);
-  res.status(500).json({
-    exito:   false,
-    mensaje: 'Error interno del servidor.',
-    detalle: error.message,
-  });
-});
-
+// 5. Encendido del servidor con la salida estilizada
 app.listen(PORT, () => {
-  console.log('─────────────────────────────────────');
-  console.log(`  Servidor Biblioteca corriendo en:`);
-  console.log(`  http://localhost:${PORT}`);
-  console.log(`  Catálogo: http://localhost:${PORT}/maqueta`);
-  console.log('─────────────────────────────────────');
+    console.log(`
+─────────────────────────────────────
+  Servidor Biblioteca corriendo en:
+  http://localhost:3000
+  Catálogo: http://localhost:3000/maqueta
+─────────────────────────────────────`);
 });

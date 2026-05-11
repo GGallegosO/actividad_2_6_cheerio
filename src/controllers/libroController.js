@@ -1,65 +1,101 @@
 /**
- * src/controllers/libroController.js
+ * libroController.js
+ * Controlador de extracción de datos del catálogo de la biblioteca.
+ * Responsabilidad: recibir requests, invocar servicios y responder JSON.
  */
-import { extraerLibros } from '../services/libroService.js';
 
-// Endpoint 1: Obtener todos los libros
-export const obtenerLibros = async (req, res, next) => {
+import { obtenerLibros as extraerLibros } from '../services/libroService.js';
+
+/**
+ * GET /api/libros
+ * Retorna todos los libros del catálogo.
+ */
+export const obtenerLibros = async (req, res) => {
   try {
-    const libros = await extraerLibros(); // Llamamos al servicio de Cheerio
-    
+    const libros = await extraerLibros();
+
     res.json({
       exito: true,
       total: libros.length,
-      datos: libros
+      datos: libros,
     });
   } catch (error) {
-    next(error);
+    console.error(`[ERROR] obtenerLibros: ${error.message}`);
+    res.status(500).json({
+      exito: false,
+      mensaje: 'Error al extraer los libros.',
+      detalle: error.message,
+    });
   }
 };
 
-// Endpoint 2: Obtener solo los disponibles 
-export const obtenerLibrosDisponibles = async (req, res, next) => {
+/**
+ * GET /api/libros/disponibles
+ * Retorna solo los libros con stock disponible.
+ */
+export const obtenerLibrosDisponibles = async (req, res) => {
   try {
-    const todosLosLibros = await extraerLibros();
-    
-    // Filtramos el arreglo buscando solo los que tengan estado 'disponible'
-    const disponibles = todosLosLibros.filter(l => l.estado === 'disponible');
+    const todos = await extraerLibros();
+    // Filtramos directamente los que están disponibles
+    const disponibles = todos.filter((l) => l.estado === 'disponible');
 
     res.json({
       exito: true,
       total: disponibles.length,
-      datos: disponibles
+      datos: disponibles,
     });
   } catch (error) {
-    next(error);
+    console.error(`[ERROR] obtenerLibrosDisponibles: ${error.message}`);
+    res.status(500).json({
+      exito: false,
+      mensaje: 'Error al filtrar libros disponibles.',
+      detalle: error.message,
+    });
   }
 };
 
-// Endpoint 3: Filtrar por categoría 
-export const obtenerLibrosPorCategoria = async (req, res, next) => {
+/**
+ * GET /api/libros/categoria/:categoria
+ * Retorna libros filtrados por categoría.
+ */
+export const obtenerLibrosPorCategoria = async (req, res) => {
+  const { categoria } = req.params;
+
+  // Validación básica del parámetro (Error 400)
+  if (!categoria || typeof categoria !== 'string') {
+    return res.status(400).json({
+      exito: false,
+      mensaje: 'El parámetro categoría es inválido.',
+    });
+  }
+
   try {
-    const { categoria } = req.params;
-    const todosLosLibros = await extraerLibros();
+    const todos = await extraerLibros();
+    const filtrados = todos.filter(
+      (l) => l.categoria.toLowerCase() === categoria.toLowerCase()
+    );
 
-    // Filtramos por la categoría recibida en la URL
-    const filtrados = todosLosLibros.filter(l => l.categoria === categoria.toLowerCase());
-
-    // Validación: Si no hay libros en esa categoría, enviamos error 404 
+    // Si la categoría no existe en el catálogo (Error 404)
     if (filtrados.length === 0) {
       return res.status(404).json({
         exito: false,
-        mensaje: `No se encontraron libros para la categoría: "${categoria}"`
+        mensaje: `No se encontraron libros para la categoría: "${categoria}".`,
       });
     }
 
+    // Respuesta exitosa
     res.json({
       exito: true,
-      categoria: categoria,
+      categoria,
       total: filtrados.length,
-      datos: filtrados
+      datos: filtrados,
     });
   } catch (error) {
-    next(error);
+    console.error(`[ERROR] obtenerLibrosPorCategoria: ${error.message}`);
+    res.status(500).json({
+      exito: false,
+      mensaje: 'Error al filtrar por categoría.',
+      detalle: error.message,
+    });
   }
 };

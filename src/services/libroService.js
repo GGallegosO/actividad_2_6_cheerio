@@ -1,75 +1,74 @@
-/**
- * src/services/libroService.js
- */
-import fs from 'fs/promises';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
 import * as cheerio from 'cheerio';
+import fs from 'fs/promises';
+import path from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Armamos la ruta exacta donde está guardado el HTML del catálogo
-const rutaHTML = path.join(__dirname, '../../public/catalogo.html');
-
-export const extraerLibros = async () => {
-  try {
-    // 1. Leemos el archivo físico completo
-    const htmlCrudo = await fs.readFile(rutaHTML, 'utf-8');
-
-    // 2. Cargamos el texto en Cheerio
-    const $ = cheerio.load(htmlCrudo);
-
+/**
+ * Función encargada exclusivamente de la extracción de datos (Responsabilidad Única).
+ * Recibe el texto crudo del HTML y devuelve un arreglo de objetos JSON.
+ */
+const extraerDatosDeHtml = (html) => {
+    // 1. Cargamos el texto en Cheerio para crear el DOM virtual
+    const $ = cheerio.load(html);
     const libros = [];
 
-    // 3. LA MAGIA DE CHEERIO:
-    // Le decimos a $: "Busca todas las etiquetas que tengan la clase '.libro'. 
-    // Luego, haz un ciclo (.each) y ejecuta esta función por cada una que encuentres."
-    $('.libro').each((index, elemento) => {
-      
-      // $(elemento) representa el "div" del libro actual en el ciclo.
-      // .attr() extrae atributos ocultos en la etiqueta HTML (como data-id)
-      const id = parseInt($(elemento).attr('data-id'));
-      const categoria = $(elemento).attr('data-categoria');
+    // 2. Bucle: Iteramos estrictamente sobre cada elemento que tenga la clase .libro
+    $('.libro').each((i, el) => {
+        
+        // Extraemos atributos ocultos en la etiqueta principal del libro
+        const id = parseInt($(el).attr('data-id'), 10);
+        const categoria = $(el).attr('data-categoria');
 
-      // .find() busca hacia adentro del div actual por una clase específica.
-      // .text() extrae el texto visible entre las etiquetas.
-      // .trim() limpia los espacios en blanco sobrantes a los lados.
-      const titulo = $(elemento).find('.titulo').text().trim();
-      const autor = $(elemento).find('.autor').text().trim();
-      
-      // Como el texto viene como "ISBN: 978-...", usamos .replace() de JavaScript 
-      // para borrar la palabra "ISBN: " y quedarnos solo con el número limpio.
-      const isbn = $(elemento).find('.isbn').text().replace('ISBN: ', '').trim();
-      const anio = parseInt($(elemento).find('.anio').text().replace('Año: ', '').trim());
-      const editorial = $(elemento).find('.editorial').text().replace('Editorial: ', '').trim();
-      
-      // En la pauta de ejemplo, el estado ("disponible") viene en minúsculas. 
-      // Por eso agregamos .toLowerCase()
-      const estado = $(elemento).find('.estado').text().trim().toLowerCase();
-      const ubicacion = $(elemento).find('.ubicacion').text().trim();
+        // Extraemos el texto limpio de etiquetas simples
+        const titulo = $(el).find('.titulo').text().trim();
+        const autor = $(el).find('.autor').text().trim();
 
-      // Armamos un objeto JavaScript ordenado con los datos extraídos
-      const libroExtraido = {
-        id,
-        categoria,
-        titulo,
-        autor,
-        isbn,
-        anio,
-        editorial,
-        estado,
-        ubicacion
-      };
+        // Extraemos texto y "borramos" los prefijos innecesarios usando replace()
+        const isbn = $(el).find('.isbn').text().replace('ISBN:', '').trim();
+        const anio = parseInt($(el).find('.anio').text().replace('Año:', '').trim(), 10);
+        const editorial = $(el).find('.editorial').text().replace('Editorial:', '').trim();
+        
+        // Extraemos el estado (lo pasamos a minúsculas por seguridad) y la ubicación
+        const estado = $(el).find('.estado').text().trim().toLowerCase();
+        const ubicacion = $(el).find('.ubicacion').text().trim();
 
-      // Guardamos este libro en nuestro arreglo principal
-      libros.push(libroExtraido);
+        // 3. Empaquetamos todo en un objeto y lo metemos a la lista
+        libros.push({
+            id,
+            categoria,
+            titulo,
+            autor,
+            isbn,
+            anio,
+            editorial,
+            estado,
+            ubicacion
+        });
     });
 
-    return libros; // Devolvemos la lista completa ya procesada
+    // 4. Devolvemos la lista completa al controlador
+    return libros;
+};
 
-  } catch (error) {
-    console.error("Error al procesar el HTML con Cheerio:", error);
-    throw new Error("No se pudo procesar el catálogo de la biblioteca");
-  }
+/**
+ * Función principal que exportamos al controlador.
+ * Se encarga de leer el archivo físico y manejar los errores.
+ */
+export const obtenerLibros = async () => {
+    try {
+        // Buscamos el archivo catalogo.html en la carpeta public
+        const rutaHTML = path.join(process.cwd(), 'public', 'catalogo.html');
+        const htmlCrudo = await fs.readFile(rutaHTML, 'utf-8');
+        
+        // Validación de seguridad: si el HTML está vacío o fue borrado accidentalmente
+        if (!htmlCrudo || htmlCrudo.trim() === '') {
+            throw new Error('El archivo HTML base está vacío o es inválido.');
+        }
+
+        // Si el archivo está bien, delegamos el trabajo pesado a la función extractora
+        return extraerDatosDeHtml(htmlCrudo);
+        
+    } catch (error) {
+        // Si falla la lectura del archivo o el escrapeo, lanzamos el error hacia arriba
+        throw new Error(`Error al procesar el catálogo: ${error.message}`);
+    }
 };
