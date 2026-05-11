@@ -13,17 +13,17 @@ Para replicar este entorno en un laboratorio local o servidor Linux, siga estos 
 # 1. Clonar el repositorio
 git clone https://github.com/GGallegosO/actividad_2_6_cheerio.git
 ```
-# 2. Entrar a la carpeta del proyecto
+## 3. Entrar a la carpeta del proyecto
 ```bash
 cd actividad_2_6_cheerio
 ```
-# 3. Instalar dependencias
+## 4. Instalar dependencias
 ```bash
 # Nota: El proyecto incluye un 'override' en package.json para asegurar 
 # la compatibilidad de la librería 'undici' con versiones de Node.js 18+.
 npm install
 ```
-## 3. Ejecución
+## 5. Ejecución
 Para iniciar el servicio en el puerto 3000:
 ```bash
 # Iniciar servidor
@@ -31,7 +31,7 @@ node app.js
 ```
 El servidor desplegará una consola con los enlaces directos para las pruebas.
 
-## 4. Endpoints de la API
+## 6. Endpoints de la API
 | Método | Endpoint | Descripción |
 | :--- | :--- | :--- |
 | **GET** | `/api/libros` | Retorna el catálogo completo con los 8 libros extraídos. |
@@ -39,7 +39,7 @@ El servidor desplegará una consola con los enlaces directos para las pruebas.
 | **GET** | `/api/libros/categoria/:categoria` | Retorna libros pertenecientes a una categoría específica. |
 | **GET** | `/maqueta` | Permite visualizar el archivo HTML original de la biblioteca. |
 
-## 5. Ejemplos de Request y Response
+## 7. Ejemplos de Request y Response
 
 ### Petición: `GET /api/libros/disponibles`
 
@@ -74,7 +74,7 @@ El servidor desplegará una consola con los enlaces directos para las pruebas.
   ]
 }
 ```
-## 6. Documentación Técnica (Cumplimiento de Requerimientos)
+## 8. Documentación Técnica (Cumplimiento de Requerimientos)
 
 ### Extracción de Datos y Manipulación del DOM (Cheerio)
 Para el cumplimiento del requerimiento de scraping, se implementó una lógica de consulta al DOM en el archivo `libroService.js` utilizando los siguientes métodos de **Cheerio**:
